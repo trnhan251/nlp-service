@@ -66,3 +66,6 @@ class Model:
 
         probability = self.model.predict(test_data)[0]
         return {'False': probability[0], 'True': probability[1]}
+
+    def train(self):
+        pass
