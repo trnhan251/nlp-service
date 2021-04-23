@@ -3,7 +3,7 @@ from flask_restful import Resource, Api, reqparse
 from model import Model
 
 app = Flask(__name__)
-model = Model('C:\\Users\\TrungNhan.Vu\\OneDrive - insidemedia.net\\Desktop\\Bachelorarbeit\\Model')
+model = Model('./nlp-models/fine-tuned-model.h5')
 model.create_model()
 
 
