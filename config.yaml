@@ -1,0 +1,3 @@
+azure_storage_connectionstring: "connectionstring"
+models_container_name: "models"
+source_folder: "./nlp-models"
