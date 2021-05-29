@@ -1,7 +1,7 @@
 import tensorflow as tf
 import numpy as np
 import transformers
-from data_generator import BertSemanticDataGenerator
+from data_generator import AlbertSemanticDataGenerator
 
 
 class Model:
@@ -27,14 +27,14 @@ class Model:
                 shape=(128,), dtype=tf.int32, name="token_type_ids"
             )
             # Loading pretrained BERT model.
-            bert_model = transformers.TFBertModel.from_pretrained("bert-base-uncased")
+            albert_model = transformers.TFAlbertModel.from_pretrained("albert-base-v2")
             # Freeze the BERT model to reuse the pretrained features without modifying them.
-            bert_model.trainable = False
+            albert_model.trainable = False
 
-            bert_outputs = bert_model(
+            albert_outputs = albert_model(
                 input_ids, attention_mask=attention_masks, token_type_ids=token_type_ids
             )
-            last_hidden_state = bert_outputs[0]
+            last_hidden_state = albert_outputs[0]
 
             # Add trainable layers on top of frozen layers to adapt the pretrained features on the new data.
             bi_lstm = tf.keras.layers.Bidirectional(
@@ -50,17 +50,11 @@ class Model:
                 inputs=[input_ids, attention_masks, token_type_ids], outputs=output
             )
 
-            self.model.compile(
-                optimizer=tf.keras.optimizers.Adam(),
-                loss="categorical_crossentropy",
-                metrics=["acc"],
-            )
-
-            self.model.load_weights(self.path + '/fine-tuned-model.h5')
+            self.model.load_weights(self.path + '/fine-tuned-albert-model.h5')
 
     def check_similarity(self, sentence1, sentence2):
         sentence_pairs = np.array([[str(sentence1), str(sentence2)]])
-        test_data = BertSemanticDataGenerator(
+        test_data = AlbertSemanticDataGenerator(
             sentence_pairs, labels=None, batch_size=1, shuffle=False, include_targets=False,
         )
 

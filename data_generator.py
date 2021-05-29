@@ -3,12 +3,27 @@ import numpy as np
 import transformers
 
 
-class BertSemanticDataGenerator(tf.keras.utils.Sequence):
+class AlbertSemanticDataGenerator(tf.keras.utils.Sequence):
+    """Generates batches of data.
+
+    Args:
+        sentence_pairs: Array of premise and hypothesis input sentences.
+        labels: Array of labels.
+        batch_size: Integer batch size.
+        shuffle: boolean, whether to shuffle the data.
+        include_targets: boolean, whether to incude the labels.
+
+    Returns:
+        Tuples `([input_ids, attention_mask, `token_type_ids], labels)`
+        (or just `[input_ids, attention_mask, `token_type_ids]`
+         if `include_targets=False`)
+    """
+
     def __init__(
         self,
         sentence_pairs,
         labels,
-        batch_size=128,
+        batch_size=32,
         shuffle=True,
         include_targets=True,
     ):
@@ -19,8 +34,8 @@ class BertSemanticDataGenerator(tf.keras.utils.Sequence):
         self.include_targets = include_targets
         # Load our BERT Tokenizer to encode the text.
         # We will use base-base-uncased pretrained model.
-        self.tokenizer = transformers.BertTokenizer.from_pretrained(
-            "bert-base-uncased", do_lower_case=True
+        self.tokenizer = transformers.AlbertTokenizer.from_pretrained(
+            "albert-base-v2", do_lower_case=True
         )
         self.indexes = np.arange(len(self.sentence_pairs))
         self.on_epoch_end()
