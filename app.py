@@ -51,7 +51,7 @@ def prediction():
     sentence1 = content['sentence1']
     sentence2 = content['sentence2']
     prediction_result = model.check_similarity(sentence1, sentence2)
-    result = str(prediction_result['True'])
+    result = str(prediction_result)
     return jsonify(result)
 
 

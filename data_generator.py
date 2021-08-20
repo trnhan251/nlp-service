@@ -3,24 +3,24 @@ import numpy as np
 import transformers
 
 
-class BertSemanticDataGenerator(tf.keras.utils.Sequence):
+class AlbertSemanticDataGenerator(tf.keras.utils.Sequence):
     def __init__(
         self,
         sentence_pairs,
-        labels,
-        batch_size=128,
+        scores,
+        batch_size=32,
         shuffle=True,
         include_targets=True,
     ):
         self.sentence_pairs = sentence_pairs
-        self.labels = labels
+        self.scores = scores
         self.shuffle = shuffle
         self.batch_size = batch_size
         self.include_targets = include_targets
         # Load our BERT Tokenizer to encode the text.
         # We will use base-base-uncased pretrained model.
-        self.tokenizer = transformers.BertTokenizer.from_pretrained(
-            "bert-base-uncased", do_lower_case=True
+        self.tokenizer = transformers.AlbertTokenizer.from_pretrained(
+            "albert-base-v2", do_lower_case=True
         )
         self.indexes = np.arange(len(self.sentence_pairs))
         self.on_epoch_end()
@@ -43,6 +43,7 @@ class BertSemanticDataGenerator(tf.keras.utils.Sequence):
             return_attention_mask=True,
             return_token_type_ids=True,
             pad_to_max_length=True,
+            truncation=True,
             return_tensors="tf",
         )
 
@@ -53,8 +54,8 @@ class BertSemanticDataGenerator(tf.keras.utils.Sequence):
 
         # Set to true if data generator is used for training/validation.
         if self.include_targets:
-            labels = np.array(self.labels[indexes], dtype="int32")
-            return [input_ids, attention_masks, token_type_ids], labels
+            scores = np.array(self.scores[indexes], dtype="int32")
+            return [input_ids, attention_masks, token_type_ids], scores
         else:
             return [input_ids, attention_masks, token_type_ids]
 
