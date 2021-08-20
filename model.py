@@ -11,15 +11,15 @@ class Model:
 
     def create_model(self):
         input_ids = tf.keras.layers.Input(
-            shape=(max_length,), dtype=tf.int32, name="input_ids"
+            shape=(128,), dtype=tf.int32, name="input_ids"
         )
         # Attention masks indicates to the model which tokens should be attended to.
         attention_masks = tf.keras.layers.Input(
-            shape=(max_length,), dtype=tf.int32, name="attention_masks"
+            shape=(128,), dtype=tf.int32, name="attention_masks"
         )
         # Token type ids are binary masks identifying different sequences in the model.
         token_type_ids = tf.keras.layers.Input(
-            shape=(max_length,), dtype=tf.int32, name="token_type_ids"
+            shape=(128,), dtype=tf.int32, name="token_type_ids"
         )
         # Loading pretrained BERT model.
         bert_model = transformers.TFAlbertModel.from_pretrained("albert-base-v2")
@@ -34,7 +34,7 @@ class Model:
         # Applying hybrid pooling approach to bi_lstm sequence output.
         avg_pool = tf.keras.layers.GlobalAveragePooling1D()(last_hidden_state)
         dense_layer_1 = tf.keras.layers.Dense(384, activation="relu", name="dense_old")(avg_pool)
-        dropout = tf.keras.layers.Dropout(0.4)(dense_layer_1)
+        dropout = tf.keras.layers.Dropout(0.3)(dense_layer_1)
         output = tf.keras.layers.Dense(1)(dropout)
 
         self.model = tf.keras.models.Model(
@@ -42,14 +42,14 @@ class Model:
         )
 
         self.model.compile(
-            optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
+            optimizer=tf.keras.optimizers.Adam(learning_rate=1e-5),
             loss="mse",
             metrics=[
                 tf.keras.metrics.RootMeanSquaredError()
             ],
         )
 
-        self.model.load_weights(self.path + '/fine-tuned-model.h5')
+        self.model.load_weights(self.path + '/best_albert_fine_tuned-03.h5')
 
     def check_similarity(self, sentence1, sentence2):
         sentence_pairs = np.array([[str(sentence1), str(sentence2)]])
