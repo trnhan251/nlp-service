@@ -48,12 +48,12 @@ def index():
 @app.route("/api/predict", methods=['POST'])
 def prediction():
     content = request.json
-    sentence1 = content['sentence1']
-    sentence2 = content['sentence2']
+    sentence1 = content['Sentence1']
+    sentence2 = content['Sentence2']
     prediction_result = model.check_similarity(sentence1, sentence2)
     result = str(prediction_result)
     return jsonify(result)
 
 
 if __name__ == '__main__':
-    app.run(5002)
+    app.run(port=5002)
